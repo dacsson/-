@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis} from "recharts";
 import { create, all } from 'mathjs'
-import { generateGraph, onlyUnique } from "./Math ";
+import { generateGraph, onlyUnique } from "./Math";
 import { useRef, useEffect } from "react";
 import ForceGraph2D from 'react-force-graph-2d';
 
