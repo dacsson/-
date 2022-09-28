@@ -148,7 +148,12 @@ const Task1 = () => {
                         <div>
                             { item.widget === 'first' && 
                                 <div class='scheme'> 
-                                    { JSON.stringify(graph.nodes) }
+                                    { graph.nodes.map((pair, index) => (
+                                        <div class='rowN' key={index}>
+                                            <div class='el'>{pair[0]}</div>
+                                            <div class='el'>{pair[1]}</div>
+                                        </div>                                        
+                                    )) }
                                 </div>
                             }   
                         </div>
