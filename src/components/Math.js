@@ -4,42 +4,18 @@ const config = { }
 const math = create(all, config)
 
 // - Алгоритм Кнута + генерация массива [1; n] 
-function generateRandomArray(n, m) {
+function generateRandomArray(n) {
+    let array = Array.from({ length: n }, (v, i) =>  i + 1)
 
-    let vertices = Array.from({ length: n }, (v, i) =>  i + 1)
-    let array = new Array(m).fill(0)
-    let randomIndex = Math.floor(random(0, n-1))
-    let randomIndexes = []
-    console.log('vertices', vertices, 'array', array)
+    let currentIndex = n, randomIndex
 
-    // - Генерим ранд индексы и берём на рандоме из списка вершин 
-    for(let i = 0; i < m; i++) {
-        randomIndexes.push(randomIndex)
-        array[i] = vertices[randomIndex]
-        randomIndex = Math.floor(random(0, n))
-        //while(randomIndexes.includes(randomIndex)) randomIndex = Math.floor(random(0, n-1))
-        console.log('GENERATING', array[i], 'RAND INDEXES', randomIndexes, 'ARRAY', array)
-    }
-
-    // - Добавить недостающие вершины
-    for(let i = 0; i < n; i++) {
-        if(!array.includes(vertices[i])) {
-            array.push(vertices[i])
-        }
-    }
-
-
-    for(let)
-
-    // let currentIndex = n, randomIndex
-
-    // while( currentIndex != 0 ) {
-    //     randomIndex = Math.floor(Math.random() * currentIndex)
-    //     currentIndex--
+    while( currentIndex != 0 ) {
+        randomIndex = Math.floor(Math.random() * currentIndex)
+        currentIndex--
         
-    //     [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]]
-    // }
-
+        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]]
+    }
+    
     return array
 }
 
@@ -161,11 +137,9 @@ function sortArrayToLinkedGraph(array, n) {
     return array
 }
 
-export function generateGraph(n, m) {
-    let array = sortArrayToLinkedGraph(generateRandomArray(n, m), n)
-    while(!checkIfConnected(array, n)) array = sortArrayToLinkedGraph(generateRandomArray(n, m), n)
-    console.log('final array', array)
-    console.log('check if connected', checkIfConnected(array, n))
+export function generateGraph(n) {
+    let array = sortArrayToLinkedGraph(generateRandomArray(n), n)
+    console.log('check if connected', checkIfConnected([[1, 2], [2, 3], [4, 5]], 5))
     // console.log('gnrtd arr', array, 'checkifconnected', checkIfConnected([[1, 2], [2, 3], [3, 4]]))
     return array
 }
