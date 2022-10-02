@@ -141,3 +141,61 @@ export function generateGraph(n, m) {
 export function onlyUnique(value, index, self) {
     return self.indexOf(value) === index;
 }
+
+//- Найти все смежне вершины с данной
+export function findNextNodes(array, n) {
+    let nextNodes = []
+    let nextNodesItem = []
+
+    let matrix = createMatrix(array, n)
+    //console.log(' get matrix', matrix)
+
+    let vertices = Array.from({ length: n }, (v, i) =>  i + 1)
+
+    for(let i = 0; i < matrix._data.length; i++) {
+        nextNodesItem = new Array()
+        console.log('   ROW', matrix._data[i])
+        for(let j = 0; j < matrix._data[i].length; j++) {
+            console.log('   EL', matrix._data[i][j])
+            if(matrix._data[i][j] === 1 && i != j) {
+                nextNodesItem.push(vertices[j])
+            } 
+        }
+        console.log(' tmp array for', i,  nextNodesItem)
+        nextNodes.push(nextNodesItem)
+        console.log(' NEXT NODES IN MATH', nextNodes)
+    }
+    return nextNodes
+}
+
+// - Создать матрциу инцидентности
+export function createNextMatrix(array, n) {
+    let vertices = Array.from({ length: n }, (v, i) =>  i + 1)
+
+    let matrix = math.zeros(n, array.length)
+
+    for(let i = 0; i < n; i++) {
+        for(let j = 0; j < array.length; j++) {
+            if(array[j][0] === vertices[i] || array[j][1] === vertices[i]) matrix._data[i][j] = 1
+            else matrix._data[i][j] = 0
+        }
+    }
+
+    return matrix._data
+}
+
+// - Вычислить степень вершины -> nextMatrix - матрица инцидентности
+export function findNodeDegree(nextMatrix) {
+    let degrees = []
+
+    for(let i = 0; i < nextMatrix.length; i++) {
+        let count = 0
+        console.log('   TO MAGRIX XXX', nextMatrix[i])
+        for(let j = 0; j < nextMatrix[i].length; j++) {
+            if( nextMatrix[i][j] === 1 ) count++
+        }
+        degrees.push(count)
+    }
+
+    return degrees
+}
