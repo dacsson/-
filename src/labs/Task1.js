@@ -6,6 +6,7 @@ import { Graph, VisGraph } from '../components/Graph';
 import { create, all } from 'mathjs'
 import Draggable from 'react-draggable'
 import ForceGraph2D from 'react-force-graph-2d';
+import { createNextMatrix, findNextNodes, findNodeDegree } from '../components/Math';
 
 const Task1 = () => {
 
@@ -24,6 +25,17 @@ const Task1 = () => {
 
     const [V, setV] = useState()
     const [R, setR] = useState()
+    const [N, setN] = useState([])
+    
+    // - Массив смежных вершин
+    const [nextNodes, setNextNodes] = useState([])
+
+    // - Матрица смежности
+    const [nextMatrix, setNextMatrix] = useState([])
+
+    // - Степени вершин
+    const [degrees, setDegrees] = useState([])
+
     const [graph, setGraph] = useState([])
 
     const [present, setPresent] = useState([])
@@ -87,6 +99,22 @@ const Task1 = () => {
             console.log('graph genering', G)
             setGraph(G)
             console.log('graph generated', graph.nodes)
+
+            let N = Array.from({ length: V }, (v, i) =>  i + 1)
+            setN(N)
+
+            let list = []
+            list = findNextNodes(G.nodes, G.vertices)
+            setNextNodes(list)
+            console.log('   NEXT NODES', nextNodes)
+
+            let matrix = []
+            matrix = createNextMatrix(G.nodes, G.vertices)
+            setNextMatrix(matrix)
+
+            let degrees = []
+            degrees = findNodeDegree(matrix)
+            setDegrees(degrees)
         }
     }
 
@@ -146,15 +174,71 @@ const Task1 = () => {
                     </div>
                     { widgetList.map((item, index) => (
                         <div>
-                            { item.widget === 'first' && 
-                                <div class='scheme'> 
-                                    { graph.nodes.map((pair, index) => (
-                                        <div class='rowN' key={index}>
-                                            <div class='el'>{pair[0]}</div>
-                                            <div class='el'>{pair[1]}</div>
-                                        </div>                                        
-                                    )) }
+                            <div style={{ 
+                                textAlign: 'center',
+                                marginTop: '10px'
+                             }}>
+                            <a>Степени вершин</a>
+                            { N.map((item, i) => (
+                                <div key={i} style={{
+                                    display: 'inline-block',
+                                    marginLeft: '10px',
+                                }}>
+                                    <div> {item}: { degrees[item-1] }</div>
                                 </div>
+                            )) }   
+                            </div>                      
+                            { item.widget === 'first' && 
+                                <div style={{ textAlign: 'center', marginTop: '15px'}}>
+                                    <a>Список рёбер</a>
+                                    <div class='scheme'> 
+                                        { graph.nodes.map((pair, index) => (
+                                            <div class='rowN' key={index}>
+                                                <div class='el'>{pair[0]}</div>
+                                                <div class='el'>{pair[1]}</div>
+                                            </div>                                        
+                                        )) }
+                                    </div>
+                                </div>
+                            }
+                            { item.widget === 'second' &&
+                                <div style={{ textAlign: 'center', marginTop: '15px'}}>
+                                    <a>Список смежных вершин</a>
+                                    <div class='scheme'> 
+                                        { N.map((item, index) => (
+                                            <div class='rowN' key={index}>
+                                                <div class='el'>{item}</div>
+                                                    <div class='rowP'>
+                                                        <div class='el'>{ nextNodes[item-1] }</div>
+                                                    </div>
+                                            </div>                                        
+                                        )) }
+                                    </div>
+                                </div> 
+                            }
+                            { item.widget === 'third' &&
+                                <div style={{ textAlign: 'center', marginTop: '15px'}}>
+                                    <a>Матрица инцидентности</a>
+                                    <div class='scheme'>
+                                        { graph.nodes.map((obj, i) => (
+                                            <div class='rowN' key={i}>
+                                                <div class='el'>{obj}</div>
+                                            </div>
+                                        )) } 
+                                        { nextMatrix.map((item, index) => (
+                                            <div class='rowN' key={index} style={ { display: 'block', padding: '15px' } }>
+                                                { item.map((obj, i) => (
+                                                    <div class='el' key={i} style={{ 
+                                                        display: 'inline-block'
+                                                     }}>{JSON.stringify(obj)}</div>
+                                                )) }
+                                                    {/* <div class='rowP'>
+                                                        <div class='el'>{ nextNodes[item-1] }</div>
+                                                    </div> */}
+                                            </div>                                        
+                                        )) }
+                                    </div>
+                                </div> 
                             }   
                         </div>
                     )) }
