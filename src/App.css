@@ -61,7 +61,7 @@ button + button {
 	height: 100%;
 	position: fixed;
   align-self: right;
-	font-size: 16px;
+	font-size: 14px;
 	background: var(--blue-back2);
 	border-right: 1px solid var(--gray);
 }
@@ -70,12 +70,12 @@ button + button {
   color: var(--white-light);
 	padding: 16px 8px 16px 8px;
   border-bottom: 10px solid var(--gray);
-  text-align: center;
 }
 
 .sidebar .profile label {
   display: inline-block;
   padding-right: 15px;
+  margin-left: 35px;
 }
 
 label + input {
@@ -83,19 +83,21 @@ label + input {
 }
 
 .sidebar .profile input {
-  width: 15%;
+  width: 13%;
   color: var(--white-light);
   border: 1px solid var(--blue-light);
   border-radius: 15px;
   background-color: var(--blue-back2);
   padding: 10px;
-  font-size: 16px;
+  font-size: 14px;
   text-align: center;
 }
 
 .sidebar .profile button {
+  display: block;
+  margin-left: 155px;
   margin-top: 20px;
-  border: 1px solid var(--white-light);
+  background-color: var(--blue-light);
 }
 
 .sidebar .profile .box {
@@ -115,7 +117,7 @@ label + input {
 
 .sidebar button {
   font-family: 'Roboto', sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   color: var(--white-light);
   background-color: transparent;
   outline: none;
@@ -179,6 +181,7 @@ label + input {
   border-radius: 15px;
   min-height: 10%;
   min-width: 25%;
+  font-size: 14px;
   background-color: var(--blue-back2);
   width: 60%;
   height: fit-content;

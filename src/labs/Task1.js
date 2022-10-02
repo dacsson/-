@@ -1,7 +1,7 @@
 import '../App.css'
 import React, {useEffect, useState, useRef} from 'react'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import { faPen, faFile, faWindowMinimize } from '@fortawesome/free-solid-svg-icons'
+import { faDotCircle, faFile, faWindowMinimize } from '@fortawesome/free-solid-svg-icons'
 import { Graph, VisGraph } from '../components/Graph';
 import { create, all } from 'mathjs'
 import Draggable from 'react-draggable'
@@ -131,18 +131,18 @@ const Task1 = () => {
                 </div>
 
                 <div class="menu">
-                <button onClick={() => showFrist(0)}>
-                    <FontAwesomeIcon icon={faPen} size='sm'></FontAwesomeIcon>
-                    <a>Список рёбер</a>
-                </button>
-                <button onClick={() => showSecond(1)}>
-                    <FontAwesomeIcon icon={faPen} size='sm'></FontAwesomeIcon>
-                    <a>Список смежных вершин</a>
-                </button>
-                <button onClick={() => showThird(2)}>
-                    <FontAwesomeIcon icon={faPen} size='sm'></FontAwesomeIcon>
-                    <a>Матрица инцидентности</a>
-                </button>
+                    <button onClick={() => showFrist(0)}>
+                        <FontAwesomeIcon icon={faDotCircle} size='sm'></FontAwesomeIcon>
+                        <a>Список рёбер</a>
+                    </button>
+                    <button onClick={() => showSecond(1)}>
+                        <FontAwesomeIcon icon={faDotCircle} size='sm'></FontAwesomeIcon>
+                        <a>Список смежных вершин</a>
+                    </button>
+                    <button onClick={() => showThird(2)}>
+                        <FontAwesomeIcon icon={faDotCircle} size='sm'></FontAwesomeIcon>
+                        <a>Матрица инцидентности</a>
+                    </button>
                 </div>
                 
                 <div class='wrapper'>
