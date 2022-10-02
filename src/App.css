@@ -180,7 +180,7 @@ label + input {
   min-height: 10%;
   min-width: 25%;
   background-color: var(--blue-back2);
-  width: fit-content;
+  width: 60%;
   height: fit-content;
 }
 
