@@ -6,9 +6,9 @@ import { Graph, VisGraph } from '../components/Graph';
 import { create, all } from 'mathjs'
 import Draggable from 'react-draggable'
 import ForceGraph2D from 'react-force-graph-2d';
-import { createNextMatrix, findNextNodes, findNodeDegree } from '../components/Math';
+import { createMatrix, createNextMatrix, deepSearch, widthSearch, findNextNodes, findNodeDegree } from '../components/Math';
 
-const Task1 = () => {
+const Task2 = () => {
 
     const config = { }
     const math = create(all, config)
@@ -32,11 +32,17 @@ const Task1 = () => {
 
     // - Матрица смежности
     const [nextMatrix, setNextMatrix] = useState([])
-    
+
     // - Степени вершин
     const [degrees, setDegrees] = useState([])
 
     const [graph, setGraph] = useState([])
+
+    // - Обход в глубину
+    const [DPS, setDPS] = useState([])
+
+    // - Обход в ширину
+    const [WPS, setWPS] = useState([])
 
     const showFrist = (index) => {
         const list = [...widgetList]
@@ -107,12 +113,20 @@ const Task1 = () => {
             console.log('   NEXT NODES', nextNodes)
 
             let matrix = []
-            matrix = createNextMatrix(G.nodes, G.vertices)
-            setNextMatrix(matrix)
+            matrix = createMatrix(G.nodes, G.vertices)
+            setNextMatrix(matrix._data)
 
             let degrees = []
-            degrees = findNodeDegree(matrix)
+            degrees = findNodeDegree(createNextMatrix(G.nodes, G.vertices))
             setDegrees(degrees)
+
+            let dps = []
+            dps = deepSearch(matrix._data)
+            setDPS(dps)
+
+            let wps = []
+            wps = widthSearch(list)
+            setWPS(wps)            
         }
     }
 
@@ -139,16 +153,15 @@ const Task1 = () => {
                 </button>
                 <button onClick={() => showThird(2)}>
                     <FontAwesomeIcon icon={faPen} size='sm'></FontAwesomeIcon>
-                    <a>Матрица инцидентности</a>
+                    <a>Матрица смежности</a>
                 </button>
                 </div>
                 
                 <div class='wrapper'>
                     <div class='match-result'>
-                        <p>Сгенерировать связный граф, представив его как список рёбер, затем: </p>
-                        <p>1. Преобразовать в список смежных вершин </p>
-                        <p>2. Преобразовать в матрицу инцидентности.</p>
-                        <p>Вычисляются степени вершин.</p>  
+                        <p>Сгенерировать связный граф, затем: </p>
+                        <p>1. Представить как матрицу смежности и произвести поиск в глубину </p>
+                        <p>2. Преобразовать в список смежных вершин и произвести поиск в ширину</p>
                     </div>
                 </div>
 
@@ -182,7 +195,7 @@ const Task1 = () => {
                                     display: 'inline-block',
                                     marginLeft: '10px',
                                 }}>
-                                    <div> {item}: { degrees[item-1] }</div>
+                                    <p> {item}: { degrees[item-1] }</p>
                                 </div>
                             )) }   
                             </div>                      
@@ -202,6 +215,15 @@ const Task1 = () => {
                             { item.widget === 'second' &&
                                 <div style={{ textAlign: 'center', marginTop: '15px'}}>
                                     <a>Список смежных вершин</a>
+                                    <p>Поиск в ширину</p>
+                                    { WPS.map((item, i) => (
+                                        <div key={i} style={{
+                                            display: 'inline-block',
+                                            marginLeft: '10px',
+                                        }}>
+                                            <p> {'=>'}{item} </p>
+                                        </div>
+                                    )) }   
                                     <div class='scheme'> 
                                         { N.map((item, index) => (
                                             <div class='rowN' key={index}>
@@ -216,9 +238,10 @@ const Task1 = () => {
                             }
                             { item.widget === 'third' &&
                                 <div style={{ textAlign: 'center', marginTop: '15px'}}>
-                                    <a>Матрица инцидентности</a>
+                                    <a>Матрица смежности</a>
+                                    <p>Поиск в глубину : { JSON.stringify(DPS) }</p>
                                     <div class='scheme'>
-                                        { graph.nodes.map((obj, i) => (
+                                        { N.map((obj, i) => (
                                             <div class='rowN' key={i}>
                                                 <div class='el'>{obj}</div>
                                             </div>
@@ -228,11 +251,10 @@ const Task1 = () => {
                                                 { item.map((obj, i) => (
                                                     <div class='el' key={i} style={{ 
                                                         display: 'inline-block'
-                                                     }}>{JSON.stringify(obj)}</div>
+                                                    }}>
+                                                        {JSON.stringify(obj)}
+                                                    </div>
                                                 )) }
-                                                    {/* <div class='rowP'>
-                                                        <div class='el'>{ nextNodes[item-1] }</div>
-                                                    </div> */}
                                             </div>                                        
                                         )) }
                                     </div>
@@ -240,33 +262,6 @@ const Task1 = () => {
                             }   
                         </div>
                     )) }
-                    {/* {N.length > 0 &&
-                    <div class='tables'>
-                        <div class='scheme'>
-                            {N.map((i, index) => (
-                                <div class='rowN' key={index}>
-                                    <div class='el'>{i}</div>
-                                </div>
-                            ))}
-                            <br></br>            
-                            {scheme.map((i, index) => (
-                                <div>
-                                {i.map((item, k) => (
-                                    <div class='rowP' key={k}>
-                                        <div class='el'>{math.round(item, 6)}</div>
-                                    </div>
-                                ))}
-                                </div>                                        
-                            ))}
-                        </div>  
-                        <div class='tableH'>
-                        {H.map((i, index) => (
-                                <div class='rowP' key={index}>
-                                        <div class='el'>{math.round(i, 6)}</div>
-                                </div>                                       
-                            ))}  
-                        </div>
-                    </div>}  */}
                 </div>
                 </Draggable> }
                 </div>
@@ -302,4 +297,4 @@ const Task1 = () => {
     )
 }
 
-export default Task1
+export default Task2

@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis} from "recharts";
 import { create, all } from 'mathjs'
-import { generateGraph, onlyUnique } from "./Math";
+import { generateGraph, toReadableData } from "./Math";
 import { useRef, useEffect } from "react";
-import ForceGraph2D from 'react-force-graph-2d';
+import ForceGraph2D from 'react-force-graph-2d'
 
 import '../App.css'
 
@@ -31,43 +31,13 @@ var dataOG = {
     ]
 }
 
-function toReadableData(graph) {
-    let unpairedArray = []
-    for(let i = 0; i < graph.nodes.length; i++) {
-        unpairedArray.push(graph.nodes[i][0])
-        unpairedArray.push(graph.nodes[i][1])
-    }
-
-    let data = [], nodes = [], links = [], vertices = Array.from({ length: graph.vertices }, (v, i) =>  i + 1)
-    
-    for(let i = 0; i < graph.vertices; i++) {
-        nodes.push(
-            { id:  JSON.stringify(vertices[i]), name: JSON.stringify(vertices[i])}
-        )
-    }
-
-    for(let i = 0; i < graph.nodes.length; i++) {
-        links.push(
-            { source: JSON.stringify(graph.nodes[i][0]), target: JSON.stringify(graph.nodes[i][1]) }
-        )
-    }
-
-    data = {
-        nodes: nodes,
-        links: links
-    }
-
-    console.log('INCOMING DATA', data, 'ORIGINAL DATA', dataOG)
-
-    return data
-}
-
 export const VisGraph = props => {
     let graph = props.graph
-    let width, height
+    let isOriented = props.isOriented
+    let arrowWidth = isOriented ? 10 : 0
     const forceRef = useRef()
     useEffect(() => {
-        forceRef.current.d3Force("charge").strength(-200);
+        forceRef.current.d3Force("charge").strength(-700);
     });
 
     console.log(toReadableData(graph))
@@ -80,6 +50,7 @@ export const VisGraph = props => {
             backgroundColor="none"
             linkAutoColorBy='group'
             linkColor='white'
+            linkDirectionalArrowLength={arrowWidth}
             nodeCanvasObject={(node, ctx, globalScale) => {
                 const label = node.name;
                 ctx.fillStyle = 'white'

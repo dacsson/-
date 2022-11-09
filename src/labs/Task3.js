@@ -6,9 +6,9 @@ import { Graph, VisGraph } from '../components/Graph';
 import { create, all } from 'mathjs'
 import Draggable from 'react-draggable'
 import ForceGraph2D from 'react-force-graph-2d';
-import { createNextMatrix, findNextNodes, findNodeDegree } from '../components/Math';
+import { createMatrix, createNextMatrix, deepSearch, widthSearch, findNextNodes, findNodeDegree, createAlignMatrix, createMatrixOriented, transportMatrix } from '../components/Math';
 
-const Task1 = () => {
+const Task3 = () => {
 
     const config = { }
     const math = create(all, config)
@@ -32,11 +32,26 @@ const Task1 = () => {
 
     // - Матрица смежности
     const [nextMatrix, setNextMatrix] = useState([])
-    
+
     // - Степени вершин
     const [degrees, setDegrees] = useState([])
 
     const [graph, setGraph] = useState([])
+
+    // - Обход в глубину
+    const [DPS, setDPS] = useState([])
+
+    // - Обход в ширину
+    const [WPS, setWPS] = useState([])
+
+    // - Матрица достижимости
+    const [alignMatrix, setAlignMatrix] = useState([])
+
+    // - Матрица контрдостижимости
+    const [alignContrMatrix, setAlignContrMatrix] = useState([])
+
+    // - Матрица смежности ориентированного
+    const [nextMatrixOriented, setNextMatrixOriented] = useState([])
 
     const showFrist = (index) => {
         const list = [...widgetList]
@@ -107,12 +122,32 @@ const Task1 = () => {
             console.log('   NEXT NODES', nextNodes)
 
             let matrix = []
-            matrix = createNextMatrix(G.nodes, G.vertices)
-            setNextMatrix(matrix)
+            matrix = createMatrix(G.nodes, G.vertices)
+            setNextMatrix(matrix._data)
 
             let degrees = []
             degrees = findNodeDegree(matrix)
             setDegrees(degrees)
+
+            let dps = []
+            dps = deepSearch(matrix._data)
+            setDPS(dps)
+
+            let wps = []
+            wps = widthSearch(list)
+            setWPS(wps)
+            
+            let ormatrix = []
+            ormatrix = createMatrixOriented(G, V)
+            setNextMatrixOriented(ormatrix)
+
+            let amatrix = []
+            amatrix = createAlignMatrix(V, ormatrix)
+            setAlignMatrix(amatrix._data)
+
+            let acontrmatrix = []
+            acontrmatrix = transportMatrix(amatrix)
+            setAlignContrMatrix(acontrmatrix._data)
         }
     }
 
@@ -131,24 +166,23 @@ const Task1 = () => {
                 <div class="menu">
                 <button onClick={() => showFrist(0)}>
                     <FontAwesomeIcon icon={faPen} size='sm'></FontAwesomeIcon>
-                    <a>Список рёбер</a>
+                    <a>Матрица контрдостижимости</a>
                 </button>
                 <button onClick={() => showSecond(1)}>
                     <FontAwesomeIcon icon={faPen} size='sm'></FontAwesomeIcon>
-                    <a>Список смежных вершин</a>
+                    <a>Матрица достижимости</a>
                 </button>
                 <button onClick={() => showThird(2)}>
                     <FontAwesomeIcon icon={faPen} size='sm'></FontAwesomeIcon>
-                    <a>Матрица инцидентности</a>
+                    <a>Матрица смежности</a>
                 </button>
                 </div>
                 
                 <div class='wrapper'>
                     <div class='match-result'>
-                        <p>Сгенерировать связный граф, представив его как список рёбер, затем: </p>
-                        <p>1. Преобразовать в список смежных вершин </p>
-                        <p>2. Преобразовать в матрицу инцидентности.</p>
-                        <p>Вычисляются степени вершин.</p>  
+                        <p>Сгенерировать связный ориентированный граф, затем: </p>
+                        <p>Получить матрицы достижимости и контрдостижимости, и транзитивное замыкание.</p> 
+                        <p>Определить компоненты сильной связности.</p>
                     </div>
                 </div>
 
@@ -188,27 +222,45 @@ const Task1 = () => {
                             </div>                      
                             { item.widget === 'first' && 
                                 <div style={{ textAlign: 'center', marginTop: '15px'}}>
-                                    <a>Список рёбер</a>
-                                    <div class='scheme'> 
-                                        { graph.nodes.map((pair, index) => (
-                                            <div class='rowN' key={index}>
-                                                <div class='el'>{pair[0]}</div>
-                                                <div class='el'>{pair[1]}</div>
+                                    <a>Матрица контр-достижимости</a>
+                                    <div class='scheme'>
+                                        { N.map((obj, i) => (
+                                            <div class='rowN' key={i}>
+                                                <div class='el'>{obj}</div>
+                                            </div>
+                                        )) } 
+                                        { alignContrMatrix.map((item, index) => (
+                                            <div class='rowN' key={index} style={ { display: 'block', padding: '15px' } }>
+                                                { item.map((obj, i) => (
+                                                    <div class='el' key={i} style={{ 
+                                                        display: 'inline-block'
+                                                    }}>
+                                                        {JSON.stringify(obj)}
+                                                    </div>
+                                                )) }
                                             </div>                                        
                                         )) }
                                     </div>
-                                </div>
+                                </div> 
                             }
                             { item.widget === 'second' &&
                                 <div style={{ textAlign: 'center', marginTop: '15px'}}>
-                                    <a>Список смежных вершин</a>
-                                    <div class='scheme'> 
-                                        { N.map((item, index) => (
-                                            <div class='rowN' key={index}>
-                                                <div class='el'>{item}</div>
-                                                    <div class='rowP'>
-                                                        <div class='el'>{ nextNodes[item-1] }</div>
+                                    <a>Матрица достижимости</a>
+                                    <div class='scheme'>
+                                        { N.map((obj, i) => (
+                                            <div class='rowN' key={i}>
+                                                <div class='el'>{obj}</div>
+                                            </div>
+                                        )) } 
+                                        { alignMatrix.map((item, index) => (
+                                            <div class='rowN' key={index} style={ { display: 'block', padding: '15px' } }>
+                                                { item.map((obj, i) => (
+                                                    <div class='el' key={i} style={{ 
+                                                        display: 'inline-block'
+                                                    }}>
+                                                        {JSON.stringify(obj)}
                                                     </div>
+                                                )) }
                                             </div>                                        
                                         )) }
                                     </div>
@@ -216,23 +268,22 @@ const Task1 = () => {
                             }
                             { item.widget === 'third' &&
                                 <div style={{ textAlign: 'center', marginTop: '15px'}}>
-                                    <a>Матрица инцидентности</a>
+                                    <a>Матрица смежности</a>
                                     <div class='scheme'>
-                                        { graph.nodes.map((obj, i) => (
+                                        { N.map((obj, i) => (
                                             <div class='rowN' key={i}>
                                                 <div class='el'>{obj}</div>
                                             </div>
                                         )) } 
-                                        { nextMatrix.map((item, index) => (
+                                        { nextMatrixOriented._data.map((item, index) => (
                                             <div class='rowN' key={index} style={ { display: 'block', padding: '15px' } }>
                                                 { item.map((obj, i) => (
                                                     <div class='el' key={i} style={{ 
                                                         display: 'inline-block'
-                                                     }}>{JSON.stringify(obj)}</div>
+                                                    }}>
+                                                        {JSON.stringify(obj)}
+                                                    </div>
                                                 )) }
-                                                    {/* <div class='rowP'>
-                                                        <div class='el'>{ nextNodes[item-1] }</div>
-                                                    </div> */}
                                             </div>                                        
                                         )) }
                                     </div>
@@ -240,33 +291,6 @@ const Task1 = () => {
                             }   
                         </div>
                     )) }
-                    {/* {N.length > 0 &&
-                    <div class='tables'>
-                        <div class='scheme'>
-                            {N.map((i, index) => (
-                                <div class='rowN' key={index}>
-                                    <div class='el'>{i}</div>
-                                </div>
-                            ))}
-                            <br></br>            
-                            {scheme.map((i, index) => (
-                                <div>
-                                {i.map((item, k) => (
-                                    <div class='rowP' key={k}>
-                                        <div class='el'>{math.round(item, 6)}</div>
-                                    </div>
-                                ))}
-                                </div>                                        
-                            ))}
-                        </div>  
-                        <div class='tableH'>
-                        {H.map((i, index) => (
-                                <div class='rowP' key={index}>
-                                        <div class='el'>{math.round(i, 6)}</div>
-                                </div>                                       
-                            ))}  
-                        </div>
-                    </div>}  */}
                 </div>
                 </Draggable> }
                 </div>
@@ -282,7 +306,7 @@ const Task1 = () => {
                             <a>Граф</a>
                         </div>              
                         <div class='graph-wrapper' id='graph'>
-                            <VisGraph graph={graph} isOriented={false}/>
+                            <VisGraph graph={graph} isOriented={true}/>
                             {/* <React.Fragment>
                                 <Graph/>   
                             </React.Fragment> */}
@@ -302,4 +326,4 @@ const Task1 = () => {
     )
 }
 
-export default Task1
+export default Task3

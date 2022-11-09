@@ -15,7 +15,7 @@ function generateRandomArray(n, m) {
     // - Массив для сбора пар, чтобы исключить петли/повторения
     let pair = []
 
-    console.log('vertices', vertices, 'array', array)
+    // // console.log('vertices', vertices, 'array', array)
 
     // - Генерим ранд индексы и берём на рандоме из списка вершин 
     for(let i = 0; i < m*2; i++) {
@@ -29,7 +29,7 @@ function generateRandomArray(n, m) {
                 array[i-1] = vertices[Math.floor(random(0, n))]
             }
             //pair.push([math.max([array[i], array[i-1]]), math.min([array[i], array[i-1]])])
-            console.log('   index', i, array[i], array[i - 1])
+            // // console.log('   index', i, array[i], array[i - 1])
         }
 
     }
@@ -40,9 +40,9 @@ function generateRandomArray(n, m) {
         let spair = []
         for(let j = 0; j < m*2; j+=2) {
             spair = [math.max([array[j], array[j+1]]), math.min([array[j], array[j+1]])]
-            console.log('   PAIRS EQ In', fpair, spair)
+            // // console.log('   PAIRS EQ In', fpair, spair)
             while( (fpair[0] === spair[0] && fpair[1] === spair[1] && i != j) || (array[i] === array[i + 1] && typeof array[i] != undefined)) {
-                console.log(' FOUND EQUAL PAIR', fpair[0] === spair[0], fpair[1] === spair[1], array[i] === array[i + 1], array[i], array[i+1])
+                // // console.log(' FOUND EQUAL PAIR', fpair[0] === spair[0], fpair[1] === spair[1], array[i] === array[i + 1], array[i], array[i+1])
                 array[i] = vertices[Math.floor(random(0, n))]
                 array[i+1] = vertices[Math.floor(random(0, n))]
                 spair = [math.max([array[i], array[i+1]]), math.min([array[i], array[i+1]])]
@@ -50,8 +50,8 @@ function generateRandomArray(n, m) {
                 break
             }            
         }
-        console.log('   PAIRS EQ OUT', fpair, spair)
-        console.log('ARRAY FOR NOW', array, 'PAIRS FOR NOW', pair)
+        // // console.log('   PAIRS EQ OUT', fpair, spair)
+        // // console.log('ARRAY FOR NOW', array, 'PAIRS FOR NOW', pair)
     }
 
     return array
@@ -96,7 +96,7 @@ function checkIfConnected(array, n) {
 }
 
 // - Сделать матрицу смежности -> array = [ [x, y], [y, z], ... ]
-function createMatrix(array, n) {
+export function createMatrix(array, n) {
     // let matrix = []
 
     // // - Заполнить матрицу 0
@@ -125,16 +125,16 @@ function createMatrix(array, n) {
 // - Сделать из последовательного массива чисел массив пар рёбер
 function sortArrayToLinkedGraph(array, n) {
     array = makePairaFromArray(array)
-    //console.log('matrix', matrix)
+    //// // console.log('matrix', matrix)
     return array
 }
 
 export function generateGraph(n, m) {
     let array = sortArrayToLinkedGraph(generateRandomArray(n, m), n)
     while(!checkIfConnected(array, n)) array = sortArrayToLinkedGraph(generateRandomArray(n, m), n)
-    console.log('final array', array)
-    console.log('check if connected', checkIfConnected(array, n))
-    // console.log('gnrtd arr', array, 'checkifconnected', checkIfConnected([[1, 2], [2, 3], [3, 4]]))
+    // // console.log('final array', array)
+    // // console.log('check if connected', checkIfConnected(array, n))
+    // // // console.log('gnrtd arr', array, 'checkifconnected', checkIfConnected([[1, 2], [2, 3], [3, 4]]))
     return array
 }
 
@@ -148,22 +148,22 @@ export function findNextNodes(array, n) {
     let nextNodesItem = []
 
     let matrix = createMatrix(array, n)
-    //console.log(' get matrix', matrix)
+    //// // console.log(' get matrix', matrix)
 
     let vertices = Array.from({ length: n }, (v, i) =>  i + 1)
 
     for(let i = 0; i < matrix._data.length; i++) {
         nextNodesItem = new Array()
-        console.log('   ROW', matrix._data[i])
+        // // console.log('   ROW', matrix._data[i])
         for(let j = 0; j < matrix._data[i].length; j++) {
-            console.log('   EL', matrix._data[i][j])
+            // // console.log('   EL', matrix._data[i][j])
             if(matrix._data[i][j] === 1 && i != j) {
                 nextNodesItem.push(vertices[j])
             } 
         }
-        console.log(' tmp array for', i,  nextNodesItem)
+        // // console.log(' tmp array for', i,  nextNodesItem)
         nextNodes.push(nextNodesItem)
-        console.log(' NEXT NODES IN MATH', nextNodes)
+        // // console.log(' NEXT NODES IN MATH', nextNodes)
     }
     return nextNodes
 }
@@ -190,12 +190,133 @@ export function findNodeDegree(nextMatrix) {
 
     for(let i = 0; i < nextMatrix.length; i++) {
         let count = 0
-        console.log('   TO MAGRIX XXX', nextMatrix[i])
+        // // console.log('   TO MAGRIX XXX', nextMatrix[i])
         for(let j = 0; j < nextMatrix[i].length; j++) {
             if( nextMatrix[i][j] === 1 ) count++
         }
         degrees.push(count)
     }
 
+    console.log(' node degress', degrees)
+
     return degrees
+}
+
+// - Обход графа в глубину по матрице смежности
+export function deepSearch(matrix) {
+    let visited = []
+    let notVisited = []
+    let i = 0
+    // console.log('   DEEP SEARCH IN', matrix)
+
+    visited.push(1) 
+    while(visited.length != matrix.length) {
+        for(let j = 0; j < matrix[0].length; j++) {
+            if(matrix[i][j] === 1 && !visited.includes(j+1)) {
+                visited.push(j+1)
+                // console.log('looking for', i)
+                // console.log('where', matrix[i])
+                i = j
+            }
+        }
+        for(let i = 0; i < matrix.length; i++) {
+            if(!visited.includes(i+1)) visited.push(i+1)
+        }
+    }
+
+    return visited
+}
+
+// - Обход графа в ширину по списку смежных вершин
+export function widthSearch(array) {
+    // console.log('   WIDTH SEARCH IN', array)
+    let visited = [], temp, found = false
+
+    // visited.push(1) 
+    for(let i = 0; i < array.length; i++) {
+        temp = new Array
+        for(let j = 0; j < array[i].length; j++) {
+            found = false
+            for(let z = 0; z < visited.length; z++) {
+                if(visited[z].includes(array[i][j])) found = true
+            }
+            if(!found) temp.push(array[i][j])
+        }
+        if(temp.length) visited.push(temp)
+    }
+    for(let i = 0; i < array.length; i++) {
+
+    }
+
+    return visited
+}
+
+export function toReadableData(graph) {
+    let unpairedArray = []
+    for(let i = 0; i < graph.nodes.length; i++) {
+        unpairedArray.push(graph.nodes[i][0])
+        unpairedArray.push(graph.nodes[i][1])
+    }
+
+    let data = [], nodes = [], links = [], vertices = Array.from({ length: graph.vertices }, (v, i) =>  i + 1)
+    
+    for(let i = 0; i < graph.vertices; i++) {
+        nodes.push(
+            { id:  JSON.stringify(vertices[i]), name: JSON.stringify(vertices[i])}
+        )
+    }
+
+    for(let i = 0; i < graph.nodes.length; i++) {
+        links.push(
+            { source: JSON.stringify(graph.nodes[i][0]), target: JSON.stringify(graph.nodes[i][1]) }
+        )
+    }
+
+    data = {
+        nodes: nodes,
+        links: links
+    }
+
+    return data
+}
+
+// - Создать матрицу смежности для ориентированного графа
+export function createMatrixOriented(graph, n) {
+    let links = toReadableData(graph).links
+    let matrix = math.zeros(n, n)
+
+    console.log('links', links)
+
+    for(let i = 0; i < links.length; i++) {
+        matrix._data[links[i]['source']-1][links[i]['target']-1] = 1
+    }
+
+    return matrix
+}
+
+// - Создать матрицу достижимости 
+export function createAlignMatrix(nodes, matrix) {
+    let resMatrix = matrix 
+    let tempMatrix
+
+    for(let i = 2; i < nodes; i++) {
+        tempMatrix = math.pow(matrix, i)
+        console.log('matrix', matrix, 'in', i, 'is', tempMatrix)
+        resMatrix = math.add(tempMatrix, resMatrix)
+    }
+
+    return resMatrix
+}
+
+// - Транспонировать матрицу 
+export function transportMatrix(matrix) {
+    let resMatrix = math.zeros(matrix._data.length, matrix._data.length)
+
+    for(let i = 0; i < matrix._data.length; i++) {
+        for(let j = 0; j < matrix._data[0].length; j++) {
+            resMatrix._data[j][i] = matrix._data[i][j] > 0 ? 1 : 0
+        }
+    }
+
+    return resMatrix
 }
