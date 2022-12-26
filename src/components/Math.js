@@ -1,4 +1,4 @@
-import { create, all, random, forEach, matrix, max, min, e } from 'mathjs'
+import { create, all, random, forEach, matrix, max, min, e, exp, randomInt } from 'mathjs'
 
 const config = { }
 const math = create(all, config)
@@ -319,4 +319,94 @@ export function transportMatrix(matrix) {
     }
 
     return resMatrix
+}
+
+// - Алгоритм Дейкстры
+export function AlgorithmDejkstra(matrix, v) {
+    let start = v
+    // - Расстояния от данной вершины до другой
+    var distances = [];
+    // - Заполняем массив расстояний макс числами
+    for (var i = 0; i < matrix.length; i++) distances[i] = Number.MAX_VALUE;
+    // - Начинаем с нуля
+    distances[start] = 0;
+
+    // - Прошли ли мы через вершину
+    var visited = [];
+
+    while (true) {
+        // Найти вершину с кратчашим расстоянием к данной
+        var shortestDistance = Number.MAX_VALUE;
+        var shortestIndex = -1;
+        for (var i = 0; i < matrix.length; i++) {
+            // - Через все вершины которые не посетили
+            if (distances[i] < shortestDistance && !visited[i]) {
+                shortestDistance = distances[i];
+                shortestIndex = i;
+            }
+        }
+
+        if (shortestIndex === -1) {
+            // - Если кончились вершины
+            console.log(`\tDISTANCE -> ${distances}`)
+            return distances;
+        }
+
+        // - Для соседних вершин
+        for (var i = 0; i < matrix[shortestIndex].length; i++) {
+            // - Если через эту вершину ближе
+            if (matrix[shortestIndex][i] !== 0 && distances[i] > distances[shortestIndex] + matrix[shortestIndex][i]) {
+                // - Сделать её новой кратчайшей
+                distances[i] = distances[shortestIndex] + matrix[shortestIndex][i];
+            }
+        }
+        // Lastly, note that we are finished with this node.
+        visited[shortestIndex] = true;
+    }
+}
+
+export function LoopDejkstra(matrix, n) {
+    let allDistances = []
+    let vertices = Array.from({ length: n }, (v, i) =>  i + 1)
+
+    for(let i = 0; i < vertices.length; i++) {
+        allDistances[i] = AlgorithmDejkstra(matrix, i)
+    }
+
+    return allDistances
+}
+
+export function AlgorithmBellmanFord(matrix, src) {
+    // - Массив расстояний 
+    var current_lengths = Array(matrix.length).fill(0);
+ 
+    // Relax all edges |V| - 1 times. A simple
+    // shortest path from src to any other
+    // vertex can have at-most |V| - 1 edges
+    for (let i = 0; i < matrix.length - 1; i++) {
+        for (let left_index = 0; left_index < matrix.length; left_index++) {
+            for (let right_index = 0; right_index < matrix.length; right_index++) {
+                if (matrix[left_index][right_index] != 0) {
+                    if (((current_lengths[right_index] > current_lengths[left_index] + matrix[left_index][right_index]) && (current_lengths[left_index] != 0)) || 
+                        ((current_lengths[right_index] == 0) && (right_index != src) && (current_lengths[left_index] != 0)) || (left_index == src)) {
+                        current_lengths[right_index] = current_lengths[left_index] + matrix[left_index][right_index];
+                    }
+                }       
+            }
+        }
+    }
+
+    console.log(`\n DISTANCE for ${src} - ${current_lengths}`)
+    return current_lengths
+}
+
+export function LoopBellmanFord(matrix, n) {
+    let allDistances = []
+    let vertices = Array.from({ length: n }, (v, i) =>  i + 1)
+
+    for(let i = 0; i < vertices.length; i++) {
+        allDistances[i] = AlgorithmBellmanFord(matrix, i)
+    }
+
+    return allDistances
 }
